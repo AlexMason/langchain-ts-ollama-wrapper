@@ -1,17 +1,20 @@
 import { ExtractLabels } from "../types";
 
+export type TaskHistoryItem = {
+  user: 'user' | 'assistant',
+  prompt: string,
+};
+
 export class Task<T extends string> {
   private systemPrompt: T;
-  private context: Record<ExtractLabels<T>, any> = {} as Record<ExtractLabels<T>, any>;
+  private context: Record<ExtractLabels<T>, any>;
 
-  private history: {
-    user: 'user' | 'assistant',
-    prompt: string,
-  }[] = [];
+  private history: TaskHistoryItem[];
 
-  constructor(options: { systemPrompt: T, context?: Record<ExtractLabels<T>, any> }) {
+  constructor(options: { systemPrompt: T, context?: Record<ExtractLabels<T>, any>, history?: typeof Task.prototype.history }) {
     this.systemPrompt = options.systemPrompt;
     this.context = options.context || {} as Record<ExtractLabels<T>, any>;
+    this.history = options.history || [] as typeof Task.prototype.history;
   }
 
   public setContext(context: Record<ExtractLabels<T>, any>) {
