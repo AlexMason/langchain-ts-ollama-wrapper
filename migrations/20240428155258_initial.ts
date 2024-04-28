@@ -37,5 +37,6 @@ export async function down(knex: Knex): Promise<void> {
   return await knex.schema
     .dropTable("tasks")
     .dropTable("taskHistory")
+    .dropTable("llms")
     .dropTable("users");
 }
