@@ -40,15 +40,22 @@ export class OllamaModel {
 
   private getPromptTemplate<T extends string>(task: Task<T>, taskContext: Record<ExtractLabels<T>, any>) {
     return PromptTemplate.fromTemplate([
-      this.applyContextToTemplate(this.systemTemplate, { prompt: task.getSystemPrompt() }),
+      this.applyContextToTemplate(this.systemTemplate, {
+        prompt: this.applyContextToTemplate(task.getSystemPrompt(), taskContext)
+      }),
       ...this.getPromptFormattedChatHistory(task, taskContext),
       this.userTemplate,
     ].join('\n'));
   }
 
-  private getPromptFormattedChatHistory<T extends string>(task: Task<T>, taskContext: Record<ExtractLabels<T>, any>) {
+  private getPromptFormattedChatHistory<T extends string>(
+    task: Task<T>,
+    taskContext: Record<ExtractLabels<T>, any>
+  ) {
     return task.getHistory().map((chatHistoryItem) => {
-      let template: string = chatHistoryItem.user === 'assistant' ? this.assistantTemplate : this.userTemplate;
+      let template: string = chatHistoryItem.user === 'assistant'
+        ? this.assistantTemplate
+        : this.userTemplate;
 
       template = this.applyContextToTemplate(template, chatHistoryItem);
       template = this.applyContextToTemplate(template, taskContext);
