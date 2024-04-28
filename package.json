@@ -6,9 +6,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "nodemon --watch ./src/**/*.ts --exec ts-node ",
-    "dev": "npm run watch -- src/index.ts",
     "dev:server": "npm run watch -- src/server.ts",
-    "start": "npm run build && node dist/index.js",
     "start:server": "npm run build && node dist/server.js",
     "db:seed": "knex seed:run",
     "db:migrate": "knex migrate:latest"
@@ -19,12 +17,9 @@
   "dependencies": {
     "@langchain/community": "^0.0.50",
     "@types/knex": "^0.16.1",
-    "@types/levelup": "^5.1.5",
     "@types/node": "^20.12.7",
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
-    "fastify-auth": "^1.2.0",
-    "fastify-basic-auth": "^2.3.0",
     "fastify-knex": "^0.1.1",
     "fastify-plugin": "^4.5.1",
     "fastify-sqlite": "^1.1.0",
