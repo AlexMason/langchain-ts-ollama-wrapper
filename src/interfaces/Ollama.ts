@@ -1,34 +1,30 @@
 import { ExtractLabels } from "../types";
 import { Task } from "./Task";
 import { PromptTemplate } from '@langchain/core/prompts';
-import { Ollama } from '@langchain/community/llms/ollama';
+import { Ollama, OllamaInput } from '@langchain/community/llms/ollama';
 
-export class OllamaModel<aT extends string, uT extends string> {
+export class OllamaModel {
   private model: Ollama;
 
-  private modelName: string;
-  private tempature: number;
-  private baseUrl: string;
-  private assistantTemplate: aT;
-  private userTemplate: uT;
+  private systemTemplate: string;
+  private assistantTemplate: string;
+  private userTemplate: string;
 
   constructor(options: {
     modelName: string,
-    tempature?: number,
-    baseUrl?: string,
-    assistantTemplate: aT,
-    userTemplate: uT,
+    ollamaInput: OllamaInput,
+    systemTemplate: string,
+    assistantTemplate: string,
+    userTemplate: string,
   }) {
-    this.modelName = options.modelName;
-    this.tempature = options.tempature || 0.6;
-    this.baseUrl = options.baseUrl || 'http://localhost:11434';
+    this.systemTemplate = options.systemTemplate;
     this.assistantTemplate = options.assistantTemplate;
     this.userTemplate = options.userTemplate;
 
     this.model = new Ollama({
-      baseUrl: this.baseUrl,
-      model: this.modelName,
-      temperature: this.tempature
+      baseUrl: 'http://localhost:11434',
+      model: options.modelName,
+      ...(options.ollamaInput || {}),
     });
   }
 
@@ -44,7 +40,7 @@ export class OllamaModel<aT extends string, uT extends string> {
 
   private getPromptTemplate<T extends string>(task: Task<T>, taskContext: Record<ExtractLabels<T>, any>) {
     return PromptTemplate.fromTemplate([
-      this.applyContextToTemplate(task.getSystemPrompt(), taskContext),
+      this.applyContextToTemplate(this.systemTemplate, { prompt: task.getSystemPrompt() }),
       ...this.getPromptFormattedChatHistory(task, taskContext),
       this.userTemplate,
     ].join('\n'));
