@@ -9,9 +9,10 @@ type TaskItem = {
   created_at: string,
 };
 
-export async function deleteTask(id: unknown, db: Knex) {
+export async function deleteTask(db: Knex, id: string, userId: string) {
   try {
-    await db("tasks").where({ id }).delete();
+    await db("tasks").where({ id, owner_id: userId }).delete();
+    await db("taskHistory").where({ taskId: id, owner_id: userId }).delete();
     return { success: true };
   } catch (error) {
     console.log('error', error);
@@ -39,7 +40,7 @@ export async function getTask(db: Knex, taskId: string, userId: string) {
 
   try {
     response.task = await db('tasks').where({ owner_id: userId, id: taskId }).first();
-    response.history = await db('taskHistory').where({ taskId: response.task.id });
+    response.history = await db('taskHistory').where({ taskId: response.task.id, owner_id: userId });
   } catch (error) {
     console.log('error', error);
   }
@@ -54,8 +55,8 @@ export async function addTask(db: Knex, systemPrompt: string, userId: string) {
   return newTask;
 }
 
-export async function editTask(id: string, db: Knex, updatedTask: Partial<TaskItem>) {
-  let result = await db("tasks").where({ id }).update(updatedTask);
+export async function editTask(db: Knex, id: string, userId: string, updatedTask: Partial<TaskItem>) {
+  let result = await db("tasks").where({ id, owner_id: userId }).update(updatedTask);
 
   return result;
 }

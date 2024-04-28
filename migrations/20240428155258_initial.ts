@@ -15,6 +15,8 @@ export async function up(knex: Knex): Promise<void> {
       table.integer('taskId').unsigned().references('id').inTable('tasks');
       table.string('user');
       table.string('prompt');
+      table.integer('owner_id').unsigned().references('id').inTable('users');
+      table.string("created_at").defaultTo(knex.fn.now());
     })
     .createTable('llms', (table) => {
       table.increments('id').primary();

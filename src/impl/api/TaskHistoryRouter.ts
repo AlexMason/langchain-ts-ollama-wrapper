@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify/types/instance";
-import { addTaskHistory, editTaskHistory, getTaskHistory } from "../db/taskhistory";
+import { addTaskHistory, deleteTaskHistory, editTaskHistory, getTaskHistory } from "../db/taskhistory";
 
 export default function taskhistory(fastify: FastifyInstance, options: any, done: Function) {
 
@@ -7,7 +7,7 @@ export default function taskhistory(fastify: FastifyInstance, options: any, done
     preValidation: fastify.authenticate,
     async handler(request, reply) {
       return {
-        taskHistory: await getTaskHistory(fastify.knex, (request.params as any).taskId)
+        history: await getTaskHistory(fastify.knex, (request.params as any).taskId, request.user ? request.user.id : "")
       }
     }
   });
@@ -19,6 +19,7 @@ export default function taskhistory(fastify: FastifyInstance, options: any, done
         updatedTaskId: await addTaskHistory(
           fastify.knex,
           (request.params as any).taskId,
+          request.user ? request.user.id : "",
           (request.body as any).user,
           (request.body as any).prompt
         )
@@ -30,9 +31,10 @@ export default function taskhistory(fastify: FastifyInstance, options: any, done
     preValidation: fastify.authenticate,
     async handler(request, reply) {
       return {
-        editedTaskId: await editTaskHistory(
-          (request.params as any).id,
+        editedTaskHistoryId: await editTaskHistory(
           fastify.knex,
+          (request.params as any).id,
+          request.user ? request.user.id : "",
           (request.body as any)
         )
       }
@@ -42,7 +44,13 @@ export default function taskhistory(fastify: FastifyInstance, options: any, done
   fastify.delete("/:id", {
     preValidation: fastify.authenticate,
     async handler(request, reply) {
-      return { error: "Not implemented" }
+      return {
+        deletedTaskHistoryId: await deleteTaskHistory(
+          fastify.knex,
+          (request.params as any).id,
+          request.user ? request.user.id : "",
+        )
+      }
     }
   });
 

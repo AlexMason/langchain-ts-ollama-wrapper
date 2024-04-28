@@ -43,7 +43,7 @@ export default function tasks(fastify: FastifyInstance, options: any, done: Func
         return { error: "id is required" }
       }
 
-      let result = await deleteTask(request.params.id, fastify.knex);
+      let result = await deleteTask(fastify.knex, (request.params as any).id, request.user ? request.user.id : "");
 
       return { result }
     }
@@ -57,7 +57,7 @@ export default function tasks(fastify: FastifyInstance, options: any, done: Func
         return { error: "id is required" }
       }
 
-      let result = await editTask((request.params as any).id, fastify.knex, {
+      let result = await editTask(fastify.knex, (request.params as any).id, request.user ? request.user.id : "", {
         ...(request.body as any)
       });
 

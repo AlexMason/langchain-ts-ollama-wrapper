@@ -13,11 +13,11 @@ export async function seed(knex: Knex): Promise<void> {
     await knex("taskHistory").del();
 
     await knex("taskHistory").insert([
-        { id: 1, taskId: 2, user: "assistant", prompt: "How are you today?" },
-        { id: 2, taskId: 2, user: "user", prompt: "I'm feeling down" },
-        { id: 3, taskId: 2, user: "assistant", prompt: "Go outside and enjoy the sunshine!" },
-        { id: 4, taskId: 1, user: "assistant", prompt: "How can I help you today?" },
-        { id: 5, taskId: 1, user: "user", prompt: "Is it going to be cold outside today?" },
-        { id: 6, taskId: 1, user: "assistant", prompt: "YES" },
+        { id: 1, taskId: 2, user: "assistant", prompt: "How are you today?", owner_id: "1" },
+        { id: 2, taskId: 2, user: "user", prompt: "I'm feeling down", owner_id: "1" },
+        { id: 3, taskId: 2, user: "assistant", prompt: "Go outside and enjoy the sunshine!", owner_id: "1" },
+        { id: 4, taskId: 1, user: "assistant", prompt: "How can I help you today?", owner_id: "1" },
+        { id: 5, taskId: 1, user: "user", prompt: "Is it going to be cold outside today?", owner_id: "1" },
+        { id: 6, taskId: 1, user: "assistant", prompt: "YES", owner_id: "1" },
     ]);
 };
