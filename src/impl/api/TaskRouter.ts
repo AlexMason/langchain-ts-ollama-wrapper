@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Knex } from "knex";
-import { addTask, deleteTask, getTasks, getTask } from "../db/tasks";
+import { addTask, deleteTask, getTasks, getTask, editTask } from "../db/tasks";
 
 export default function tasks(fastify: FastifyInstance, options: any, done: Function) {
   fastify.get("/", {
@@ -48,6 +48,23 @@ export default function tasks(fastify: FastifyInstance, options: any, done: Func
       return { result }
     }
   });
+
+  fastify.put("/:id", {
+    preValidation: fastify.authenticate,
+    async handler(request, reply) {
+      if (!request.params || typeof request.params !== "object" || 'id' in request.params === false) {
+        reply.code(400);
+        return { error: "id is required" }
+      }
+
+      let result = await editTask((request.params as any).id, fastify.knex, {
+        ...(request.body as any)
+      });
+
+      return { result }
+    }
+  }
+  )
 
   done();
 }

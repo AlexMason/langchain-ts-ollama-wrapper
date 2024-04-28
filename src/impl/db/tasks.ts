@@ -2,8 +2,11 @@ import { Knex } from "knex";
 
 type TaskItem = {
   id: string,
+  name: string,
+  description: string
   systemPrompt: string,
-  owner_id: string
+  owner_id: string,
+  created_at: string,
 };
 
 export async function deleteTask(id: unknown, db: Knex) {
@@ -49,4 +52,10 @@ export async function addTask(db: Knex, systemPrompt: string, userId: string) {
 
   let newTask = await db("tasks").insert(tmpTask);
   return newTask;
+}
+
+export async function editTask(id: string, db: Knex, updatedTask: Partial<TaskItem>) {
+  let result = await db("tasks").where({ id }).update(updatedTask);
+
+  return result;
 }
