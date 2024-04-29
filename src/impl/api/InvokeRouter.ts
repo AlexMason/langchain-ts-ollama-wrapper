@@ -1,16 +1,18 @@
 import { FastifyInstance } from "fastify/types/instance";
 import { OllamaModel } from "../../interfaces/Ollama";
 import { Task } from "../../interfaces/Task";
+import { getTask } from "../db/tasks";
 
 export default function invokeRouter(fastify: FastifyInstance, options: any, done: Function) {
 
   fastify.post("/", {
     preValidation: fastify.authenticate,
     async handler(request, reply) {
+      let owner_id = request.user ? request.user.id : "";
 
       let llm = await fastify.knex("llms")
         .where({
-          "owner_id": request.user ? request.user.id : "",
+          owner_id,
           id: (request.body as any).llmId
         }).first();
 
@@ -24,18 +26,10 @@ export default function invokeRouter(fastify: FastifyInstance, options: any, don
         assistantTemplate: llm.assistantTemplate
       })
 
-      let task = await fastify.knex("tasks")
-        .where({
-          // "owner_id": request.user ? request.user.id : "",
-          id: (request.body as any).taskId
-        })
-        .first();
-
-      console.log("task", task)
-      console.log("request.user", request.user)
+      let task = await getTask(fastify.knex, (request.body as any).taskId, owner_id);
 
       let newTask = new Task({
-        systemPrompt: task.systemPrompt,
+        systemPrompt: task.task.systemPrompt,
         history: task.history
       });
 

@@ -12,7 +12,7 @@ export async function seed(knex: Knex): Promise<void> {
             baseUrl: "http://localhost:11434",
             systemTemplate: "System: {prompt}",
             userTemplate: "User: {prompt}\n",
-            assistantTemplate: "Assistant: {response}\n",
+            assistantTemplate: "Assistant: {prompt}\n",
             owner_id: "1",
             created_at: knex.fn.now()
         },
